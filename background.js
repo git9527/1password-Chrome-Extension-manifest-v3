@@ -28,12 +28,15 @@ function initializeExtension() {
     chrome.contextMenus.create({
       id: 'legacy1PasswordMenu',
       title: '1Password',
-      contexts: ['all'],
-      onclick: (info) => {
-        console.log('Context menu clicked');
-        handleContextMenuClick(info);
-      }
+      contexts: ['all']
     });
+  });
+
+  chrome.contextMenus.onClicked.addListener((info, tab) => {
+    console.log('Context menu item clicked:', info.menuItemId, 'for tab:', tab.id);
+    if (info.menuItemId === 'legacy1PasswordMenu') {
+      handleContextMenuClick(info);
+    }
   });
 
   // Set up tab update listener
