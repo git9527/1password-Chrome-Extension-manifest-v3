@@ -26,6 +26,7 @@ function initializeExtension() {
   // Set up context menu
   chrome.contextMenus.removeAll(() => {
     chrome.contextMenus.create({
+      id: 'legacy1PasswordMenu',
       title: '1Password',
       contexts: ['all'],
       onclick: (info) => {
