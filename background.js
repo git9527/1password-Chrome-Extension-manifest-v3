@@ -10,10 +10,10 @@ chrome.runtime.onStartup.addListener(() => {
   initializeExtension();
 });
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log('1Password extension installed...');
-  initializeExtension();
-});
+// chrome.runtime.onInstalled.addListener(() => {
+//   console.log('1Password extension installed...');
+//   initializeExtension();
+// });
 
 // Initialize extension functionality
 function initializeExtension() {
@@ -35,7 +35,7 @@ function initializeExtension() {
   chrome.contextMenus.onClicked.addListener((info, tab) => {
     console.log('Context menu item clicked:', info.menuItemId, 'for tab:', tab.id);
     if (info.menuItemId === 'legacy1PasswordMenu') {
-      handleContextMenuClick(info);
+      handleContextMenuClick(info, tab.id);
     }
   });
 
@@ -116,21 +116,29 @@ function handleActionClick(tab) {
     chrome.tabs.sendMessage(tab.id, {
       name: 'toolbarButtonClicked',
       message: { url: tab.url }
-    }).catch(error => {
-      console.log('Could not send message to tab:', error);
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Could not send message to tab:', chrome.runtime.lastError.message);
+      } else {
+        console.log('Response from tab:', response);
+      }
     });
   }
 }
 
 // Handle context menu click
-function handleContextMenuClick(info) {
+function handleContextMenuClick(info, tabId) {
   console.log('Context menu clicked for URL:', info.pageUrl);
   if (info.pageUrl) {
-    chrome.tabs.sendMessage(info.tabId, {
+    chrome.tabs.sendMessage(tabId, {
       name: 'contextMenuClicked',
       message: { url: info.pageUrl }
-    }).catch(error => {
-      console.log('Could not send message to tab:', error);
+    }, (response) => {
+      if (chrome.runtime.lastError) {
+        console.error('Could not send message to tab:', chrome.runtime.lastError.message);
+      } else {
+        console.log('Response from tab:', response);
+      }
     });
   }
 }
